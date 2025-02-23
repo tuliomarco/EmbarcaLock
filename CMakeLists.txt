@@ -28,35 +28,37 @@ set(PICO_BOARD pico_w CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(embarcaLock C CXX ASM)
+project(embarca_lock C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(embarcaLock embarcaLock.c )
+add_executable(embarca_lock embarca_lock.c ui/display_manager.c ui/user_choose.c)
 
-pico_set_program_name(embarcaLock "embarcaLock")
-pico_set_program_version(embarcaLock "0.1")
+pico_set_program_name(embarca_lock "embarca_lock")
+pico_set_program_version(embarca_lock "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(embarcaLock 1)
-pico_enable_stdio_usb(embarcaLock 1)
+pico_enable_stdio_uart(embarca_lock 1)
+pico_enable_stdio_usb(embarca_lock 1)
 
 # Add the standard library to the build
-target_link_libraries(embarcaLock
+target_link_libraries(embarca_lock
         pico_stdlib)
 
 # Add the standard include files to the build
-target_include_directories(embarcaLock PRIVATE
+target_include_directories(embarca_lock PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        ${CMAKE_CURRENT_LIST_DIR}/ui
 )
 
 # Add any user requested libraries
-target_link_libraries(embarcaLock 
-        
+target_link_libraries(embarca_lock 
+        hardware_i2c
+        hardware_adc
         )
 
-pico_add_extra_outputs(embarcaLock)
+pico_add_extra_outputs(embarca_lock)
 
