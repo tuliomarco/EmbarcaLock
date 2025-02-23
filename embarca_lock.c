@@ -6,7 +6,7 @@
 #include "ui/user_choose.h"
 
 // Controle do efeito bouncing
-#define DEBOUNCE_DELAY_MS 200
+// #define DEBOUNCE_DELAY_MS 200
 volatile uint32_t last_interrupt_time = 0;
 
 void init_gpio() { /* Inicializa as GPIOs */ 
@@ -34,10 +34,5 @@ int main() {
     init_gpio();
     init_display();
 
-    user_choose_init(); // Inicializa as estruturas utilizadas para abas de escolha do usuário
-    uint8_t size = user_password_size(&ssd); // Obtendo o tamanho de senha escolhido
-    uint8_t* password = user_password(&ssd, size); // Obtendo a senha definida
-
-    // Visualização da senha no terminal para monitoramento 
-    for(int i = 0; i < size; i++) printf("%u ", password[i]);
+    uint8_t* password = get_password(&ssd); // Obtém a senha setada pelo usuário
 }

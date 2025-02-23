@@ -12,15 +12,18 @@
 #define VRY_PIN 26
 
 #define MAX_PASSWORD_SIZE 5
+#define MAX_ATTEMPTS 3
 
 #define DEBOUNCE_DELAY_MS 200
 
 void user_choose_init();
 void select_callback(uint gpio, uint32_t events);
-uint8_t user_change_select_button(display_t *ssd, uint16_t vrx, uint16_t vry, uint8_t init_x, uint8_t init_y, uint8_t selected, uint8_t max, uint8_t* options);
-uint8_t user_select_option(display_t *ssd, uint8_t options_amount, uint8_t* options, uint8_t init_x, uint8_t init_y, bool (*stop_condition)());
+uint8_t user_change_select_button(display_t *ssd, uint16_t vrx, uint16_t vry, uint8_t init_x, uint8_t init_y, uint8_t selected, uint8_t max, uint8_t *options);
+uint8_t user_select_option(display_t *ssd, uint8_t options_amount, uint8_t *options, uint8_t init_x, uint8_t init_y, bool (*stop_condition)());
 uint8_t user_password_size(display_t *ssd);
 uint8_t* user_password(display_t *ssd, uint8_t password_size);
 void user_password_monitoring(display_t *ssd, uint8_t size);
+bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size);
+uint8_t* get_password(display_t *ssd);
 
 #endif

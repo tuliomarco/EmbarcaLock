@@ -205,7 +205,15 @@ void display_draw_bitmap(display_t *ssd, const uint8_t *bitmap, uint8_t x, uint8
   }
 }
 
-void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8_t y, bool hover) {
+void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8_t y, bool hover) { /* Função para desenhar botões numéricos */
   display_rect(ssd, y, x, 17, 17, true, !hover);
   display_draw_bitmap(ssd, &numbers[number * 32], x, y, 16, 16, hover);
+}
+
+/* Funções para desenhar os status na tela */
+void display_draw_success(display_t *ssd) {
+  display_draw_bitmap(ssd, success, 32, 0, 64, 64, true);
+}
+void display_draw_error(display_t *ssd) {
+  display_draw_bitmap(ssd, error, 24, 0, 80, 64, true);
 }
