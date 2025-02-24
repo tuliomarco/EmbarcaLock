@@ -3,6 +3,7 @@
 #include "display_manager.h"
 #include "hardware/adc.h"
 #include "user_choose.h"
+#include "matrix_animations.h"
 
 extern uint32_t last_interrupt_time; // Tratamento do bouncing
 
@@ -143,8 +144,16 @@ uint8_t* user_password(display_t *ssd, uint8_t password_size) { /* Aba para sele
     while(!confirmed && !back) {
         number = user_select_option(ssd, 10, options, 16, 27, &number_selected_condition);
 
+        if(decrease) {
+            if(numbers_entered > 0) matrix_number(password[numbers_entered - 1], 1, 0, 0);
+            else matrix_clear();
+        }
+
         if(numbers_entered <= size && numbers_entered > 0 && !confirmed) {
             password[numbers_entered - 1] = decrease || full ? password[numbers_entered - 1] : number;
+            
+            if (!full) matrix_number(number, 1, 0, 0);
+
             full = (numbers_entered == size);
         } 
         decrease = false;
@@ -158,19 +167,25 @@ uint8_t* user_password(display_t *ssd, uint8_t password_size) { /* Aba para sele
     return password;
 }
 
-bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size) {
+bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size, bool defining) {
     uint8_t *confirmation_password, j;
     bool equal = false;
 
     for(int i = 0; i < MAX_ATTEMPTS; i++) {
-        display_draw_char(ssd, '3' - i, 116, 2);
+        if(!defining) display_draw_char(ssd, '3' - i, 116, 2);
         confirmation_password = user_password(ssd, size);
 
-        if(back) break;
+        if(back && defining) break;
+        else if (back) {
+            i--;
+            continue;
+        }
 
         for(j = 0; j < size; j++) if(confirmation_password[j] != password[j]) break;
 
         free(confirmation_password);
+
+        matrix_clear();
 
         if(j == size) {
             equal = true;
@@ -246,13 +261,13 @@ uint8_t* get_password(display_t *ssd) {
         case 2: // Tela 3: Confirmação da senha
             display_fill(ssd, false);
             display_draw_string(ssd, "CFM", 2, 2);
-            setted = user_password_confirmation(ssd, password, size);
+            setted = user_password_confirmation(ssd, password, size, true);
             if(!setted) {
                 if(!back) {
                     display_fill(ssd, false);
                     display_draw_error(ssd);
                     display_send_data(ssd);
-                    sleep_ms(2000);
+                    matrix_error();
                 }
                 screen--;
             } else {
@@ -265,4 +280,14 @@ uint8_t* get_password(display_t *ssd) {
         }
     };
     return password;
+}
+
+void display_error(display_t *ssd) {
+    display_draw_error(ssd);
+    matrix_error();
+
+    bool over = false;
+    uint8_t counter = 0;
+
+    display_countdown(ssd, 30);
 }

@@ -4,6 +4,7 @@
 #include "hardware/adc.h"
 #include "ui/display_manager.h"
 #include "ui/user_choose.h"
+#include "ui/matrix_animations.h"
 #include "core/password_manager.h"
 
 #define RESET_HOLD_TIME 5000
@@ -79,7 +80,9 @@ int main() {
     i2c_init(I2C_PORT, 400 * 1000);
     init_gpio();
     init_display();
-
+    
+    matrix_init(LED_MTX_PIN);
+    matrix_clear();
     user_choose_init();
 
     uint8_t* password = malloc(PASSWORD_SIZE);
@@ -98,14 +101,13 @@ int main() {
         bool new_setted = false;
         while(!new_setted) {
             display_draw_string(&ssd, "ANT", 2, 2);
-            if(user_password_confirmation(&ssd, password, size)) {
+            if(user_password_confirmation(&ssd, password, size, false)) {
                 password = get_password(&ssd); 
                 size = get_size();
                 save_password(password, size);
                 new_setted = true;
             } else if (!get_back()) {
-                display_draw_error(&ssd);
-                sleep_ms(2000);
+                display_error(&ssd);
                 display_fill(&ssd, false);
             }
         }
@@ -118,7 +120,7 @@ int main() {
 
             display_fill(&ssd, false);
 
-            if(user_password_confirmation(&ssd, password, size)) {
+            if(user_password_confirmation(&ssd, password, size, false)) {
                 display_fill(&ssd, false);
 
                 display_draw_success(&ssd);
@@ -127,7 +129,10 @@ int main() {
                 gpio_put(LED_R_PIN, false);
                 gpio_put(LED_G_PIN, true);
 
-            } else if (!get_back()) display_draw_error(&ssd);
+                matrix_success();
+            } else if (!get_back()) {
+                display_error(&ssd);
+            } 
 
             if(!get_back()) sleep_ms(1000);
         }

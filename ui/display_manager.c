@@ -205,6 +205,25 @@ void display_draw_bitmap(display_t *ssd, const uint8_t *bitmap, uint8_t x, uint8
   }
 }
 
+void display_countdown(display_t *ssd, uint8_t seconds) {
+  for (int i = seconds; i >= 0; i--) {
+      display_fill(ssd, false);
+      // Extrai os dois dígitos do número atual
+      uint8_t tens = i / 10;
+      uint8_t units = i % 10;
+      
+      // Desenha os números no display
+      display_draw_number_button(ssd, tens, 46, 24, true);
+      display_draw_number_button(ssd, units, 65, 24, true);
+
+      // Atualiza o display
+      display_send_data(ssd);
+
+      // Aguarda 1 segundo
+      sleep_ms(1000);
+  }
+}
+
 void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8_t y, bool hover) { /* Função para desenhar botões numéricos */
   display_rect(ssd, y, x, 17, 17, true, !hover);
   display_draw_bitmap(ssd, &numbers[number * 32], x, y, 16, 16, hover);

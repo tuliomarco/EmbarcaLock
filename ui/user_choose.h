@@ -22,11 +22,12 @@ uint8_t user_select_option(display_t *ssd, uint8_t options_amount, uint8_t *opti
 uint8_t user_password_size(display_t *ssd);
 uint8_t* user_password(display_t *ssd, uint8_t password_size);
 void user_password_monitoring(display_t *ssd, uint8_t size);
-bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size);
+bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size, bool defining);
 uint8_t* get_password(display_t *ssd);
 uint8_t get_size(void);
 uint8_t get_back(void);
 uint8_t get_locked(void);
 uint8_t set_locked(bool value);
+void display_error(display_t *ssd);
 
 #endif

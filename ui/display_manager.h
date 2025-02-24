@@ -1,9 +1,9 @@
+#ifndef DISPLAY_MANAGER_H
+#define DISPLAY_MANAGER_H
+
 #include <stdlib.h>
 #include "pico/stdlib.h"
 #include "hardware/i2c.h"
-
-#ifndef DISPLAY_MANAGER_H
-#define DISPLAY_MANAGER_H
 
 #define I2C_PORT i2c1
 #define I2C_SDA 14
@@ -58,6 +58,7 @@ void display_draw_string(display_t *ssd, const char *str, uint8_t x, uint8_t y);
 void display_draw_icon(display_t *ssd, const int id, uint8_t x, uint8_t y);
 void display_draw_bitmap(display_t *ssd, const uint8_t *bitmap, uint8_t x, uint8_t y, uint8_t width, uint8_t height, bool fill);
 void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8_t y, bool hover);
+void display_countdown(display_t *ssd, uint8_t seconds);
 void display_draw_success(display_t *ssd);
 void display_draw_error(display_t *ssd);
 void display_draw_logo(display_t *ssd);

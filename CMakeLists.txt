@@ -39,6 +39,7 @@ add_executable(embarca_lock
     embarca_lock.c 
     ui/display_manager.c 
     ui/user_choose.c
+    ui/matrix_animations.c
     core/password_manager.c
     )
 
@@ -48,6 +49,8 @@ pico_set_program_version(embarca_lock "0.1")
 # Modify the below lines to enable/disable output over UART/USB
 pico_enable_stdio_uart(embarca_lock 1)
 pico_enable_stdio_usb(embarca_lock 1)
+
+pico_generate_pio_header(embarca_lock ${CMAKE_CURRENT_LIST_DIR}/core/ws2812b.pio)
 
 # Add the standard library to the build
 target_link_libraries(embarca_lock
@@ -66,6 +69,8 @@ target_link_libraries(embarca_lock
         hardware_adc
         hardware_flash
         hardware_sync
+        hardware_clocks
+        hardware_pio
         )
 
 pico_add_extra_outputs(embarca_lock)
