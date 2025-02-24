@@ -60,5 +60,6 @@ void display_draw_bitmap(display_t *ssd, const uint8_t *bitmap, uint8_t x, uint8
 void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8_t y, bool hover);
 void display_draw_success(display_t *ssd);
 void display_draw_error(display_t *ssd);
+void display_draw_logo(display_t *ssd);
 
 #endif

@@ -35,7 +35,12 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(embarca_lock embarca_lock.c ui/display_manager.c ui/user_choose.c)
+add_executable(embarca_lock 
+    embarca_lock.c 
+    ui/display_manager.c 
+    ui/user_choose.c
+    core/password_manager.c
+    )
 
 pico_set_program_name(embarca_lock "embarca_lock")
 pico_set_program_version(embarca_lock "0.1")
@@ -52,12 +57,15 @@ target_link_libraries(embarca_lock
 target_include_directories(embarca_lock PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
         ${CMAKE_CURRENT_LIST_DIR}/ui
+        ${CMAKE_CURRENT_LIST_DIR}/core
 )
 
 # Add any user requested libraries
 target_link_libraries(embarca_lock 
         hardware_i2c
         hardware_adc
+        hardware_flash
+        hardware_sync
         )
 
 pico_add_extra_outputs(embarca_lock)

@@ -11,7 +11,6 @@
 #define VRX_PIN 27
 #define VRY_PIN 26
 
-#define MAX_PASSWORD_SIZE 5
 #define MAX_ATTEMPTS 3
 
 #define DEBOUNCE_DELAY_MS 200
@@ -25,5 +24,9 @@ uint8_t* user_password(display_t *ssd, uint8_t password_size);
 void user_password_monitoring(display_t *ssd, uint8_t size);
 bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size);
 uint8_t* get_password(display_t *ssd);
+uint8_t get_size(void);
+uint8_t get_back(void);
+uint8_t get_locked(void);
+uint8_t set_locked(bool value);
 
 #endif

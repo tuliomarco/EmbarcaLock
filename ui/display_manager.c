@@ -217,3 +217,6 @@ void display_draw_success(display_t *ssd) {
 void display_draw_error(display_t *ssd) {
   display_draw_bitmap(ssd, error, 24, 0, 80, 64, true);
 }
+void display_draw_logo(display_t *ssd) {
+  display_draw_bitmap(ssd, logo_embarca_lock, 0, 0, 128, 64, true);
+}

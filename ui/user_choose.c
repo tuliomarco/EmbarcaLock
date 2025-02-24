@@ -12,6 +12,7 @@ volatile bool number_selected = false;
 volatile bool confirmed = false;
 volatile bool decrease = false;
 volatile bool back = false;
+volatile bool locked = true;
 volatile int numbers_entered = 0;
 
 // Valores para formação da senha
@@ -20,16 +21,8 @@ uint8_t button_selected = 0;
 
 void user_choose_init() { /* Inicialização das GPIOs utilizadas e configuração das interrupções*/
     gpio_init(BTN_JSTCK_PIN);
-    gpio_init(BTN_A_PIN);
-    gpio_init(BTN_B_PIN);
-
     gpio_set_dir(BTN_JSTCK_PIN, GPIO_IN);
-    gpio_set_dir(BTN_A_PIN, GPIO_IN);
-    gpio_set_dir(BTN_B_PIN, GPIO_IN);
-
     gpio_pull_up(BTN_JSTCK_PIN);
-    gpio_pull_up(BTN_A_PIN);
-    gpio_pull_up(BTN_B_PIN);
 
     adc_init();
     adc_gpio_init(VRX_PIN);
@@ -48,14 +41,28 @@ bool number_selected_condition(void) {
     return number_selected;
 }
 
+/* Getters */
+uint8_t get_size(void) {
+    return size;
+}
+uint8_t get_back(void) {
+    return back;
+}
+uint8_t get_locked(void) {
+    return locked;
+}
+uint8_t set_locked(bool value) {
+    locked = value;
+}
+
 void reset_values() {
     number_selected = false;
-    back = false;
     confirmed = false;
     decrease = false;
     numbers_entered = 0;
     size = 0;
-    button_selected = 0;    
+    button_selected = back ? button_selected : 0;    
+    back = false;
 }
 
 void select_callback(uint gpio, uint32_t events) { /* Callcack para pressionamento dos botões */
@@ -71,8 +78,9 @@ void select_callback(uint gpio, uint32_t events) { /* Callcack para pressionamen
                 if(numbers_entered == 0) back = true;
                 else numbers_entered--;
                 decrease = true;
-            } else if (gpio == 6 && numbers_entered == size) { // Confirmação
-                confirmed = true;
+            } else if (gpio == 6) { // Confirmação
+                if(numbers_entered == size && locked) confirmed = true;
+                else if(!locked) locked = true;
             }
             number_selected = true;
         } else if(gpio == 22) size_selected = true;
@@ -112,6 +120,7 @@ uint8_t* user_password(display_t *ssd, uint8_t password_size) { /* Aba para sele
     uint8_t* password = malloc(password_size * sizeof(uint8_t));
 
     reset_values();
+    size_selected = true;
     size = password_size;
     user_password_monitoring(ssd, size);
 
@@ -150,8 +159,6 @@ uint8_t* user_password(display_t *ssd, uint8_t password_size) { /* Aba para sele
 }
 
 bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t size) {
-    display_fill(ssd, false);
-    display_draw_string(ssd, "CFM", 2, 2);
     uint8_t *confirmation_password, j;
     bool equal = false;
 
@@ -186,6 +193,7 @@ uint8_t user_select_option(display_t *ssd, uint8_t options_amount, uint8_t* opti
 
         button_selected = user_change_select_button(ssd, vrx_value, vry_value, init_x, init_y, 
             button_selected, options_amount, options);
+        
         sleep_ms(100);
     }
     return options[button_selected];
@@ -236,6 +244,8 @@ uint8_t* get_password(display_t *ssd) {
             else screen++;
             break;
         case 2: // Tela 3: Confirmação da senha
+            display_fill(ssd, false);
+            display_draw_string(ssd, "CFM", 2, 2);
             setted = user_password_confirmation(ssd, password, size);
             if(!setted) {
                 if(!back) {
