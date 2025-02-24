@@ -61,7 +61,7 @@ void reset_values() {
     decrease = false;
     numbers_entered = 0;
     size = 0;
-    button_selected = back ? button_selected : 0;    
+    button_selected = back && size_selected ? button_selected : 0;    
     back = false;
 }
 

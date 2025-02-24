@@ -212,11 +212,17 @@ void display_draw_number_button(display_t *ssd, uint8_t number, uint8_t x, uint8
 
 /* Funções para desenhar os status na tela */
 void display_draw_success(display_t *ssd) {
+  display_fill(ssd, false);
   display_draw_bitmap(ssd, success, 32, 0, 64, 64, true);
+  display_send_data(ssd);
 }
 void display_draw_error(display_t *ssd) {
+  display_fill(ssd, false);
   display_draw_bitmap(ssd, error, 24, 0, 80, 64, true);
+  display_send_data(ssd);
 }
 void display_draw_logo(display_t *ssd) {
+  display_fill(ssd, false);
   display_draw_bitmap(ssd, logo_embarca_lock, 0, 0, 128, 64, true);
+  display_send_data(ssd);
 }

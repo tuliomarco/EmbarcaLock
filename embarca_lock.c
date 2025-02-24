@@ -86,7 +86,6 @@ int main() {
     uint8_t size = 0;
 
     display_draw_logo(&ssd);
-    display_send_data(&ssd);
     
     if(!load_password(password, &size)) {
         password = get_password(&ssd); 
@@ -95,15 +94,19 @@ int main() {
     } else if(check_reset_mode()) {
 
         display_fill(&ssd, false);
-        display_draw_string(&ssd, "ANT", 2, 2);
 
-        set_locked(false);
-        while(!get_locked()) {
+        bool new_setted = false;
+        while(!new_setted) {
+            display_draw_string(&ssd, "ANT", 2, 2);
             if(user_password_confirmation(&ssd, password, size)) {
                 password = get_password(&ssd); 
                 size = get_size();
                 save_password(password, size);
-                set_locked(true);
+                new_setted = true;
+            } else if (!get_back()) {
+                display_draw_error(&ssd);
+                sleep_ms(2000);
+                display_fill(&ssd, false);
             }
         }
     }
@@ -119,17 +122,13 @@ int main() {
                 display_fill(&ssd, false);
 
                 display_draw_success(&ssd);
-                display_send_data(&ssd);
 
                 set_locked(false);
                 gpio_put(LED_R_PIN, false);
                 gpio_put(LED_G_PIN, true);
 
-            } else if (!get_back()){
-                display_fill(&ssd, false);
-                display_draw_error(&ssd);
-                display_send_data(&ssd);
-            }
+            } else if (!get_back()) display_draw_error(&ssd);
+
             if(!get_back()) sleep_ms(1000);
         }
     }
