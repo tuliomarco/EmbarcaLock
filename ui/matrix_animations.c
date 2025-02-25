@@ -17,13 +17,13 @@ typedef struct pixel_t {
 
 led_t led_matrix[LED_MTX_COUNT]; // Buffer de pixels que compôem a matriz
 
-void matrix_init(uint pin) { /* Inicialização da PIO */
+void matrix_init() { /* Inicialização da PIO */
     uint offset = pio_add_program(pio0, &ws2812b_program);
     pio = pio0;
 
     sm = pio_claim_unused_sm(pio, false);
 
-    ws2812b_program_init(pio, sm, offset, pin);
+    ws2812b_program_init(pio, sm, offset, LED_MTX_PIN);
 }
 
 uint32_t rgb_value(uint8_t B, uint8_t R, uint8_t G){ /* Formatação do valor GRB */ 

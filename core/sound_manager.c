@@ -1,9 +1,14 @@
-#include "hardware/pwm.h"
 #include "pico/stdlib.h"
+#include "hardware/pwm.h"
 #include "hardware/clocks.h"
 #include "sound_manager.h"
 
-void beep(uint16_t frequency, uint16_t duration) {
+void init_buzzers() {
+    gpio_init(BUZZER_PIN);
+    gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
+}
+
+void beep(uint16_t frequency, uint16_t duration) { /* Função para emissão do sinal sonoro */
     uint slice = pwm_gpio_to_slice_num(BUZZER_PIN);
     pwm_set_clkdiv(slice, 2.0f); // Ajuste do clock para maior precisão
 
@@ -23,7 +28,7 @@ void success_tone() {
 
 void error_tone() {
     for (int i = 0; i < 3; i++) {
-        beep(1000, 150);  // Tom grave
+        beep(1000, 150);  // Tom mais grave
         sleep_ms(50);    // Pequena pausa
     }
 }

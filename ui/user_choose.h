@@ -16,6 +16,7 @@
 #define DEBOUNCE_DELAY_MS 200
 #define RESET_PATTERN_CLICKS 3 
 
+void init_buttons();
 void user_choose_init();
 void select_callback(uint gpio, uint32_t events);
 uint8_t user_change_select_button(display_t *ssd, uint16_t vrx, uint16_t vry, uint8_t init_x, uint8_t init_y, uint8_t selected, uint8_t max, uint8_t *options);

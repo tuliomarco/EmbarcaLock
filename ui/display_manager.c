@@ -3,6 +3,22 @@
 #include "string.h"
 #include "font.h"
 
+void init_i2c_display(display_t* ssd) {
+  i2c_init(I2C_PORT, 400 * 1000);
+  gpio_set_function(I2C_SDA, GPIO_FUNC_I2C);
+  gpio_set_function(I2C_SCL, GPIO_FUNC_I2C);
+  gpio_pull_up(I2C_SDA);
+  gpio_pull_up(I2C_SCL);
+
+  display_init(ssd, WIDTH, HEIGHT, false, ADDRESS, I2C_PORT); // Inicializa o display
+  display_config(ssd); // Configura o display
+  display_send_data(ssd); // Envia os dados para o display
+
+  // Limpa o display
+  display_fill(ssd, false);
+  display_send_data(ssd);
+}
+
 void display_init(display_t *ssd, uint8_t width, uint8_t height, bool external_vcc, uint8_t address, i2c_inst_t *i2c) {
   ssd->width = width;
   ssd->height = height;

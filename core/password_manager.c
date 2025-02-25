@@ -1,8 +1,6 @@
-#include <stdio.h>
-#include "pico/stdlib.h"
+#include <string.h>
 #include "hardware/flash.h"
 #include "hardware/sync.h"
-#include <string.h>
 #include "password_manager.h"
 
 void save_password(uint8_t *password, uint8_t password_size) {

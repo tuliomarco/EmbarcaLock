@@ -42,6 +42,7 @@ typedef struct {
   uint8_t port_buffer[2];
 } display_t;
 
+void init_i2c_display(display_t *ssd);
 void display_init(display_t *ssd, uint8_t width, uint8_t height, bool external_vcc, uint8_t address, i2c_inst_t *i2c);
 void display_config(display_t *ssd);
 void display_command(display_t *ssd, uint8_t command);
