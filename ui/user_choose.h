@@ -14,6 +14,7 @@
 #define MAX_ATTEMPTS 3
 
 #define DEBOUNCE_DELAY_MS 200
+#define RESET_PATTERN_CLICKS 3 
 
 void user_choose_init();
 void select_callback(uint gpio, uint32_t events);

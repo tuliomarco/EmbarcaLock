@@ -91,3 +91,18 @@ void matrix_number(uint8_t number, bool red, bool green, bool blue) {
     set_led_by_pattern(led_number_pattern[number], red, green, blue, true);
     write_leds();
 }
+
+void matrix_begin() {
+    uint8_t turn_on_sequence[25] = {
+        12, 7, 6, 13, 16, 
+        17, 18, 11, 8, 1, 
+        2, 3, 4, 5, 14, 
+        15, 24, 23, 22, 21, 
+        20, 19, 10, 9, 0
+    };
+    for(int i = 0; i < LED_MTX_COUNT; i++) {
+        set_led(turn_on_sequence[i], 20, 20, 0);
+        write_leds();
+        sleep_ms(100);
+    }
+}

@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+
 #include "hardware/i2c.h"
 #include "hardware/adc.h"
+
 #include "ui/display_manager.h"
 #include "ui/user_choose.h"
 #include "ui/matrix_animations.h"
+
 #include "core/password_manager.h"
+#include "core/sound_manager.h"
 
 #define RESET_HOLD_TIME 5000
 #define LED_R_PIN 13
@@ -16,13 +20,15 @@ volatile uint32_t last_interrupt_time = 0;
 
 // Controle do modo de redefinição de senha
 volatile uint32_t press_start_time = 0;
-volatile bool reset_mode = false;
 
 void init_gpio() { /* Inicializa as GPIOs */ 
     gpio_init(BTN_A_PIN);
     gpio_init(BTN_B_PIN);
     gpio_init(LED_R_PIN);
     gpio_init(LED_G_PIN);
+
+    gpio_init(BUZZER_PIN);
+    gpio_set_function(BUZZER_PIN, GPIO_FUNC_PWM);
 
     gpio_set_dir(BTN_A_PIN, GPIO_IN);
     gpio_set_dir(BTN_B_PIN, GPIO_IN);
@@ -53,7 +59,7 @@ uint32_t ms_time() {
     return to_ms_since_boot(get_absolute_time());
 }
 
-bool check_reset_mode() {
+bool check_adm_mode() {
     uint32_t press_start = 0;
     uint32_t start_time = ms_time();
     
@@ -89,22 +95,43 @@ int main() {
     uint8_t size = 0;
 
     display_draw_logo(&ssd);
-    
+    matrix_begin();
+
     if(!load_password(password, &size)) {
-        password = get_password(&ssd); 
+        sleep_ms(2000);
+        password = NULL;
+        matrix_clear();
+        while(!password) password = get_password(&ssd); 
+
         size = get_size();
         save_password(password, size);
-    } else if(check_reset_mode()) {
 
+    } else if(check_adm_mode()) {
+        matrix_clear();
         display_fill(&ssd, false);
 
         bool new_setted = false;
+
         while(!new_setted) {
             display_draw_string(&ssd, "ANT", 2, 2);
             if(user_password_confirmation(&ssd, password, size, false)) {
-                password = get_password(&ssd); 
+
+                uint8_t* new = malloc(PASSWORD_SIZE);
+                new = get_password(&ssd);
+
+                if(!new) {
+                    clear_password(password);
+                    display_draw_logo(&ssd);
+                    matrix_begin();
+                    sleep_ms(2000);
+                }
+                
+                matrix_clear();
+                while(!new) new = get_password(&ssd); 
+
                 size = get_size();
-                save_password(password, size);
+                save_password(new, size);
+                password = new;
                 new_setted = true;
             } else if (!get_back()) {
                 display_error(&ssd);
@@ -113,6 +140,7 @@ int main() {
         }
     }
 
+    matrix_clear();
     while(true) {
         if(get_locked()) {
             gpio_put(LED_R_PIN, true);
@@ -124,6 +152,7 @@ int main() {
                 display_fill(&ssd, false);
 
                 display_draw_success(&ssd);
+                success_tone();
 
                 set_locked(false);
                 gpio_put(LED_R_PIN, false);
@@ -136,6 +165,5 @@ int main() {
 
             if(!get_back()) sleep_ms(1000);
         }
-    }
-    
+    }   
 }

@@ -12,5 +12,6 @@ void matrix_number(uint8_t number, bool red, bool green, bool blue);
 void matrix_error();
 void matrix_success();
 void matrix_clear();
+void matrix_begin();
 
 #endif

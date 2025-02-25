@@ -41,6 +41,7 @@ add_executable(embarca_lock
     ui/user_choose.c
     ui/matrix_animations.c
     core/password_manager.c
+    core/sound_manager.c
     )
 
 pico_set_program_name(embarca_lock "embarca_lock")
@@ -71,6 +72,7 @@ target_link_libraries(embarca_lock
         hardware_sync
         hardware_clocks
         hardware_pio
+        hardware_pwm
         )
 
 pico_add_extra_outputs(embarca_lock)

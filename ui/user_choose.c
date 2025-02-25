@@ -3,7 +3,9 @@
 #include "display_manager.h"
 #include "hardware/adc.h"
 #include "user_choose.h"
+#include "password_manager.h"
 #include "matrix_animations.h"
+#include "core/sound_manager.h"
 
 extern uint32_t last_interrupt_time; // Tratamento do bouncing
 
@@ -15,6 +17,7 @@ volatile bool decrease = false;
 volatile bool back = false;
 volatile bool locked = true;
 volatile int numbers_entered = 0;
+volatile int reset_counter = 0;
 
 // Valores para formação da senha
 uint8_t size = 0;
@@ -57,6 +60,7 @@ uint8_t set_locked(bool value) {
 }
 
 void reset_values() {
+    reset_counter = 0;
     number_selected = false;
     confirmed = false;
     decrease = false;
@@ -85,6 +89,12 @@ void select_callback(uint gpio, uint32_t events) { /* Callcack para pressionamen
             }
             number_selected = true;
         } else if(gpio == 22) size_selected = true;
+        else if(gpio == 5) {
+            reset_counter++;
+            if(reset_counter == RESET_PATTERN_CLICKS) {
+                size_selected = true;
+            }
+        }
     }
 }
 
@@ -181,7 +191,10 @@ bool user_password_confirmation(display_t *ssd, uint8_t *password, const uint8_t
             continue;
         }
 
-        for(j = 0; j < size; j++) if(confirmation_password[j] != password[j]) break;
+        for(j = 0; j < size; j++) if(confirmation_password[j] != password[j]) {
+            if(!defining) error_tone();
+            break;
+        }
 
         free(confirmation_password);
 
@@ -249,14 +262,23 @@ uint8_t* get_password(display_t *ssd) {
         switch (screen) { // Navega entre as telas de seleção
         case 0: // Tela 1: Escolha do tamanho da senha
             size = user_password_size(ssd);
-            screen++;
+            if(reset_counter == RESET_PATTERN_CLICKS) {
+                password = NULL;
+                size_selected = false;
+                reset_counter = 0;
+                setted = true;
+            } else screen++;
             break;
         case 1: // Tela 2: Definição da senha
             display_fill(ssd, false);
             display_draw_string(ssd, "DEF", 2, 2);
             password = user_password(ssd, size);
-            if(back) screen--;
+            if(back) {
+                size_selected = false;
+                screen--;
+            }
             else screen++;
+            matrix_clear();
             break;
         case 2: // Tela 3: Confirmação da senha
             display_fill(ssd, false);

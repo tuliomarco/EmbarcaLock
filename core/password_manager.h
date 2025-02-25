@@ -8,4 +8,5 @@ typedef struct {
 
 void save_password(uint8_t *password, uint8_t size);
 bool load_password(uint8_t *password, uint8_t *size);
+
 void clear_password(uint8_t *password);
